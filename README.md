@@ -1,8 +1,9 @@
 #shortcutz
 
 A tool for extracting information from Windows Shortcut Files. 
+Implemented in Golang.
 
-###Standing On The Shoulder's Of Giants
+##Standing On The Shoulder Of Giants
 
 There's a whole host of information out there about this. I simply
 wanted a library I could work with in some of my more recent code. 
