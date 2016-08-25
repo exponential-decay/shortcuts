@@ -1,4 +1,4 @@
-#shortcutz
+#shortcuts
 
 A tool for extracting information from Windows Shortcut Files. 
 Implemented in Golang.
