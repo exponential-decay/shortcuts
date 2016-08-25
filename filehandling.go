@@ -3,11 +3,30 @@ package main
 import (
    "os"
    "fmt"
+   "reflect"
 )
+
+var (
+   headersz uintptr
+)
+
+func init() {
+   structsizes()
+}
+
+func structsizes() {
+   //first struct - shortcut header
+   var header ShellLinkHeader
+   headersz = reflect.TypeOf(header).Size()
+}
 
 //return: found, off1, off2, errors
 func handleFile(fp *os.File) {
 
+   //func Read(r io.Reader, order ByteOrder, data interface{}) error
+   //buf := make([]byte, bfsize)
+   ///=dataread, err := fp.Read(buf[start:])
+   //check(err)
 
 }
 
@@ -17,10 +36,7 @@ func readFile (path string, fi os.FileInfo, err error) error {
    
    f, err := os.Open(path)
    defer f.Close()   //closing the file
-   if err != nil {
-      fmt.Fprintln(os.Stderr, "ERROR:", err)
-      os.Exit(1)  //should only exit if root is null, consider no-exit
-   }
+   check(err)
 
    switch mode := fi.Mode(); {
    case mode.IsRegular():
