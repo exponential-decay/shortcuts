@@ -3,11 +3,14 @@ package main
 import (
    "os"
    "fmt"
+   "bytes"
+   "encoding/binary"
    "reflect"
 )
 
 var (
-   headersz uintptr
+   header ShellLinkHeader
+   headersize uintptr
 )
 
 func init() {
@@ -16,18 +19,24 @@ func init() {
 
 func structsizes() {
    //first struct - shortcut header
-   var header ShellLinkHeader
-   headersz = reflect.TypeOf(header).Size()
+   headersize = reflect.TypeOf(header).Size()
 }
 
 //return: found, off1, off2, errors
 func handleFile(fp *os.File) {
+   var start int
+   buf := make([]byte, headersize)
+   _, err := fp.Read(buf[start:])   
+   check(err)
+
+   b := bytes.NewReader(buf)
 
    //func Read(r io.Reader, order ByteOrder, data interface{}) error
-   //buf := make([]byte, bfsize)
-   ///=dataread, err := fp.Read(buf[start:])
-   //check(err)
+   err = binary.Read(b, binary.LittleEndian, &header)
+   check(err)
 
+   fmt.Println(string(header.HeaderSize))
+   fmt.Println(header.ClassID)
 }
 
 //callback for walk needs to match the following:
