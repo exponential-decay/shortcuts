@@ -4,6 +4,7 @@ import (
    "os"
    "fmt"
    "bytes"
+   "errors"
    "encoding/binary"
    "reflect"
 )
@@ -23,7 +24,7 @@ func structsizes() {
 }
 
 //return: found, off1, off2, errors
-func handleFile(fp *os.File) {
+func handleFile(fp *os.File) error {
    var start int
    buf := make([]byte, headersize)
    _, err := fp.Read(buf[start:])   
@@ -33,10 +34,16 @@ func handleFile(fp *os.File) {
 
    //func Read(r io.Reader, order ByteOrder, data interface{}) error
    err = binary.Read(b, binary.LittleEndian, &header)
-   check(err)
+   if err != nil {
+      return err
+   }
 
-   fmt.Println(string(header.HeaderSize))
-   fmt.Println(header.ClassID)
+   if header.HeaderSize != headsize || header.ClassID != classid {
+      return errors.New("Not a shortcut file.")  //not a shortcut file... don't have to worry about doing too much
+   }
+
+   fmt.Println("continue to process")   
+   return nil
 }
 
 //callback for walk needs to match the following:
@@ -49,7 +56,10 @@ func readFile (path string, fi os.FileInfo, err error) error {
 
    switch mode := fi.Mode(); {
    case mode.IsRegular():
-      handleFile(f)
+      err := handleFile(f)
+      if err != nil {
+         fmt.Fprintln(os.Stderr, "INFO:", fi.Name(), err)
+      }
    case mode.IsDir():
       fmt.Fprintln(os.Stderr, "INFO:", fi.Name(), "is a directory.")      
    default: 

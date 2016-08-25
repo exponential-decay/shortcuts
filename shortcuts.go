@@ -40,11 +40,5 @@ func main() {
    }
 
    processfiles()
-
-   var x = 1
-   if x == 2 {
-      fmt.Println("4C0000000114020000000000C000000000000046")
-   }
-
 }
    
