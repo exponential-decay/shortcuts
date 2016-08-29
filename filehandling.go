@@ -39,7 +39,7 @@ func handleFile(fp *os.File) error {
    }
 
    if header.HeaderSize != headsize || header.ClassID != classid {
-      return errors.New("Not a shortcut file.")  //not a shortcut file... don't have to worry about doing too much
+      return errors.New("Not a valid shortcut file.")  //not a shortcut file... don't have to worry about doing too much
    }
 
    fmt.Println("continue to process")   
