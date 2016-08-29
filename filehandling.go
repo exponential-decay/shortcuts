@@ -30,7 +30,8 @@ func checklnkheader(HeaderSize [4]byte, ClassID [16]byte) bool {
    return true
 }
 
-func readlinkflags(flags uint32) {
+//generic flag handler...
+func readflags(flags uint32, lookuptable map[uint32]string) {
    var test uint32
    for i := 0; i < 32; i++ {
       if test == 0 {
@@ -39,17 +40,15 @@ func readlinkflags(flags uint32) {
          test = test << 1         
       }
 
-      value := LinkFlagsMap[flags & test]
+      value := lookuptable[flags & test]
       if value != nomapvalue {
          fmt.Println(value, "is set.")
       }
    }
-
 }
 
 //return: found, off1, off2, errors
 func handleFile(fp *os.File) error {
-   fmt.Println("\n")
    var start int
    buf := make([]byte, headersize)
    _, err := fp.Read(buf[start:])   
@@ -67,7 +66,10 @@ func handleFile(fp *os.File) error {
       return errors.New("Not a valid shortcut file.")  //not a shortcut file... don't have to worry about doing too much
    }
 
-   readlinkflags(header.LinkFlags)   
+   //read link flags
+   readflags(header.LinkFlags, LinkFlagsMap)   
+   readflags(header.FileAttr, FileAttrMap)
+
    return nil
 }
 
@@ -81,6 +83,8 @@ func readFile (path string, fi os.FileInfo, err error) error {
 
    switch mode := fi.Mode(); {
    case mode.IsRegular():
+      fmt.Println("\n")
+      fmt.Println(fi.Name())
       err := handleFile(f)
       if err != nil {
          fmt.Fprintln(os.Stderr, "INFO:", fi.Name(), err)
