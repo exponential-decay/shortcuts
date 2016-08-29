@@ -23,6 +23,13 @@ func structsizes() {
    headersize = reflect.TypeOf(header).Size()
 }
 
+func checklnkheader(HeaderSize [4]byte, ClassID [16]byte) bool {
+   if header.HeaderSize != headsize || header.ClassID != classid {
+      return false
+   }
+   return true
+}
+
 //return: found, off1, off2, errors
 func handleFile(fp *os.File) error {
    var start int
@@ -38,7 +45,7 @@ func handleFile(fp *os.File) error {
       return err
    }
 
-   if header.HeaderSize != headsize || header.ClassID != classid {
+   if !checklnkheader(header.HeaderSize, header.ClassID) {
       return errors.New("Not a valid shortcut file.")  //not a shortcut file... don't have to worry about doing too much
    }
 
