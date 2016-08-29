@@ -17,7 +17,11 @@ type ShellLinkHeader struct {
    FileSz      [4]byte           //FileSize
    IconIndex   [4]byte           //IconIndex
    ShowCmd     [4]byte           //ShowCommand
-   HotKey      [2]byte           //HotKey
+
+   //[2]byte HotKey values for shortcut shortcuts
+   HotKeyLow   byte              //HotKeyLow
+   HotKeyHigh  byte              //HotKeyHigh
+   
    Reserved1   [2]byte           //Reserved1
    Reserved2   [4]byte           //Reserved2
    Reserved3   [4]byte           //Reserved3
@@ -85,7 +89,7 @@ var FileAttrMap = map[uint32]string{
 
 //Verbose, but accurate... HotKeyMapping
 //LowByte represents a value, must be *one* of these
-var HotKeyMapLow = map[uint32]string{
+var HotKeyMapLow = map[byte]string{
 
    0x0: nomapvalue,
    //numbers
@@ -162,9 +166,9 @@ var HotKeyMapLow = map[uint32]string{
 
 //HotKeyMap High 
 //HighByte represents a value, must be one or a combination of these
-var HotKeyMapHigh = map[uint32]string{
+var HotKeyMapHigh = map[byte]string{
    0x0: nomapvalue,
    0x01: "SHIFT",
    0x02: "CTRL",
-   0x03: "ALT",
+   0x04: "ALT",
 }

@@ -3,8 +3,10 @@ package main
 import (
    "os"
    "fmt"
+   "sort"
    "bytes"
    "errors"
+   "strings"
    "encoding/binary"
    "reflect"
 )
@@ -30,7 +32,22 @@ func checklnkheader(HeaderSize [4]byte, ClassID [16]byte) bool {
    return true
 }
 
-//generic flag handler...
+func readhotkeyflags(low byte, high byte) {
+   key1 := HotKeyMapLow[low]
+   var key2 []string
+   for k, _ := range HotKeyMapHigh {
+      lookupkey := k & high
+      if lookupkey > 0 {
+         key2 = append(key2, HotKeyMapHigh[lookupkey])
+      }
+   }
+   sort.Sort(sort.Reverse(sort.StringSlice(key2)))
+   if key1 != nomapvalue {
+      fmt.Printf("%s-%s", strings.Join(key2,"-"), key1)      
+   }
+}
+
+//generic flag handler... linkflags and fileattrs
 func readflags(flags uint32, lookuptable map[uint32]string) {
    var test uint32
    for i := 0; i < 32; i++ {
@@ -69,6 +86,9 @@ func handleFile(fp *os.File) error {
    //read link flags
    readflags(header.LinkFlags, LinkFlagsMap)   
    readflags(header.FileAttr, FileAttrMap)
+
+   //get shortcut hotkey
+   readhotkeyflags(header.HotKeyLow, header.HotKeyHigh)
 
    return nil
 }
