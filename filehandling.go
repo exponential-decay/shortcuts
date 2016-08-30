@@ -16,6 +16,10 @@ var (
    headersize uintptr
 )
 
+//generic handler type for passing to flag parser function
+type structhandler func()
+
+//initialize
 func init() {
    structsizes()
 }
@@ -48,7 +52,7 @@ func readhotkeyflags(low byte, high byte) {
 }
 
 //generic flag handler... linkflags and fileattrs
-func readflags(flags uint32, lookuptable map[uint32]string) {
+func readflags(flags uint32, lookuptable map[uint32]string, handler structhandler) {
    var test uint32
    for i := 0; i < 32; i++ {
       if test == 0 {
@@ -59,6 +63,7 @@ func readflags(flags uint32, lookuptable map[uint32]string) {
 
       value := lookuptable[flags & test]
       if value != nomapvalue {
+         handler()
          fmt.Println(value, "is set.")
       }
    }
@@ -84,8 +89,8 @@ func handleFile(fp *os.File) error {
    }
 
    //read link flags
-   readflags(header.LinkFlags, LinkFlagsMap)   
-   readflags(header.FileAttr, FileAttrMap)
+   readflags(header.LinkFlags, LinkFlagsMap, linktargethandler)   
+   //readflags(header.FileAttr, FileAttrMap)
 
    //get shortcut hotkey
    readhotkeyflags(header.HotKeyLow, header.HotKeyHigh)
