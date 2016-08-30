@@ -1,6 +1,12 @@
 //https://msdn.microsoft.com/en-us/library/dd871305.aspx
 package main 
 
+//NB Other enumerators that we may need
+//Shell format spec:
+//https://github.com/libyal/libfwsi/blob/110cc8e0f2d549785cc4b1a2b08877a47f61e75a/documentation/Windows%20Shell%20Item%20format.asciidoc 
+//Shell link data flags enum Msoft:
+//https://msdn.microsoft.com/en-us/library/windows/desktop/bb762540(v=vs.85).aspx
+
 //things we know that we're looking for in the shortcut file
 var headsize = [4]byte{0x4C, 0x00, 0x00, 0x00}
 var classid = [16]byte{0x01, 0x14, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46}
