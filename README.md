@@ -17,6 +17,13 @@ Here are some links you may find useful.
 - Windows LNK Parsing Utility: https://tzworks.net/prototype_page.php?proto_id=11 
 - GitHub scan: https://github.com/search?utf8=%E2%9C%93&q=windows+shortcut
 
+#Microsoft Shell Format
+
+It is undocumented, but a good project i discovered reverse engineering it is: 
+https://msdn.microsoft.com/en-us/library/windows/desktop/bb762540(v=vs.85).aspx
+
+For C developers, this library looks invaluable.
+
 ##License
 
 [GPLv3](https://github.com/exponential-decay/shortcutz/blob/master/LICENSE)
