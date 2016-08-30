@@ -53,15 +53,15 @@ func readhotkeyflags(low byte, high byte) {
 
 //generic flag handler... linkflags and fileattrs
 func readflags(flags uint32, lookuptable map[uint32]string, handler structhandler) {
-   var test uint32
+   var mask uint32
    for i := 0; i < 32; i++ {
-      if test == 0 {
-         test = 1
+      if mask == 0 {
+         mask = 1
       } else {
-         test = test << 1         
+         mask = mask << 1         
       }
 
-      value := lookuptable[flags & test]
+      value := lookuptable[flags & mask]
       if value != nomapvalue {
          handler()
          fmt.Println(value, "is set.")
