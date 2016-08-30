@@ -5,7 +5,7 @@ package main
 var headsize = [4]byte{0x4C, 0x00, 0x00, 0x00}
 var classid = [16]byte{0x01, 0x14, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46}
 
-//structs that make up the shortcut specification
+//structs that make up the shortcut specification [76 bytes] 
 type ShellLinkHeader struct {
    HeaderSize  [4]byte           //HeaderSize
    ClassID     [16]byte          //LinkCLSID

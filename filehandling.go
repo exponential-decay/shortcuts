@@ -101,9 +101,10 @@ func readFile (path string, fi os.FileInfo, err error) error {
    defer f.Close()   //closing the file
    check(err)
 
+   fmt.Println("\n")
+
    switch mode := fi.Mode(); {
    case mode.IsRegular():
-      fmt.Println("\n")
       fmt.Println(fi.Name())
       err := handleFile(f)
       if err != nil {
