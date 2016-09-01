@@ -5,7 +5,6 @@ import (
    "fmt"
    "bytes"
    "errors"
-   "encoding/hex"
    "encoding/binary"
 )
 
@@ -46,6 +45,29 @@ func fpgetlenint16(fp *os.File) (uint16, error) {
    return newint, err
 }
 
+func populateSHITEM_NTFS(itemdata []byte, size uint16) {
+
+   //SHITEM_NTFS
+   //SHITEM_EXT_NTFS
+
+   fmt.Fprintf(os.Stderr, "data %x\n", itemdata)
+
+   var test SHITEM_NTFS 
+   test.itemsize = size
+
+   x:=12
+   bytereader := bytes.NewReader(ids.idlistdata)
+   for x < bytereader.Len() {
+      byte
+      fmt.Fprintf(os.Stderr, "%x\n", itemdata[x])
+      newint, _ := getint16(bytereader[x:x+1]) 
+      if newint == 0 {
+         break
+      }
+   }
+
+}
+
 func getidfields(ids idlist) error {
    var start int
    var item itemid
@@ -60,15 +82,13 @@ func getidfields(ids idlist) error {
       }
 
       if item.idsize > 0 {
-
          curr_pos := bytereader.Size() - int64(bytereader.Len())
-
          item.classid, err = bytereader.ReadByte()
          if err != nil {
             return err
          }       
 
-         //as there is no Peek() for a bytes/reader we can reset
+         //as there is no Peek() for a "bytes/reader" we can reset
          //like this... allowing the full struct to be output for debug
          bytereader.Seek(curr_pos, 0)
 
@@ -78,14 +98,7 @@ func getidfields(ids idlist) error {
          if err != nil {   //likely io.EOF if we're not careful
             return err
          }
-
-         fmt.Fprintf(os.Stderr, "ClassID: %x\n", item.classid)
-         fmt.Println("Bitmask:", 0x30 & 0x70)
-         fmt.Println("Fieldsize:", readlen)
-         fmt.Println(hex.EncodeToString(item.data))
-         fmt.Println(string(item.data))       
-         fmt.Println() 
-
+         populateSHITEM_NTFS(item.data, item.idsize)
       }
    }
    return nil

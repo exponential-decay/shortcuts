@@ -25,6 +25,8 @@ type SHITEM_NTFS struct {
    extension   SHITEM_EXT_NTFS
 }
 
+var stringpos8bit = 0x0C //12bytes
+
 type SHITEM_EXT_NTFS struct {
    extsize     uint16
    version     uint16
