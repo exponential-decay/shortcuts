@@ -35,6 +35,7 @@ type SHITEM_EXT_NTFS struct {
    unknown     uint16   //could be a uint32 in combination with identifier
    mftentry    uint32   //e.g. 8c 75 06 00 == 0x0006758c
    mftseqno    uint32   //e.g. 00 00 0A 00 == 10 ? 
+   utfstring   []byte   //what's left...
 }
 
 //values for bitwise in LinkFlags
