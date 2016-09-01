@@ -26,10 +26,11 @@ type SHITEM_NTFS struct {
    dosdate     uint16
    size2       uint16
    bitname8    []byte
-   extension   SHITEM_EXT_NTFS
 }
 
 var stringpos8bit = 0x0C //12bytes
+var STRUCT_LEN = 0xE     //14 without 8-bit string
+var EXT_LEN = 0x1C       //28bytes no []byte UTF16 block
 
 type SHITEM_EXT_NTFS struct {
    extsize     uint16

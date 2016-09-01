@@ -61,8 +61,10 @@ func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
 
    fmt.Fprintf(os.Stderr, "data %x\n\n", itemdata)
 
-   var test SHITEM_NTFS 
-   test.itemsize = size
+   var t1 SHITEM_NTFS 
+   //var t2 SHITEM_EXT_NTFS
+
+   t1.itemsize = size
 
    if class >= 0x30 {
       bytereader := bytes.NewReader(itemdata[stringpos8bit:])
@@ -79,6 +81,10 @@ func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
       }
       eightbitstring := string(itemdata[stringpos8bit:strpos])
       fmt.Println(eightbitstring)
+
+      pos := strpos + EXT_LEN -1
+      remaining := len(itemdata)-(strpos + EXT_LEN)+1
+      fmt.Fprintf(os.Stderr, "Getting UTF-16 from pos: %d, %d, %x\n", pos, remaining, string(itemdata[pos:pos+remaining]))
    }
 }
 
