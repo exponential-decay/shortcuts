@@ -24,6 +24,15 @@ type itemid struct {
 
 const uint16len = 2
 
+func getint32(bytereader *bytes.Reader) (uint32, error) {
+   var newint uint32
+   err := binary.Read(bytereader, binary.LittleEndian, &newint)
+   if err != nil {
+      return 0, err
+   }
+   return newint, err
+}
+
 func getint16(bytereader *bytes.Reader) (uint16, error) {
    var newint uint16
 
@@ -50,27 +59,24 @@ func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
    //SHITEM_NTFS
    //SHITEM_EXT_NTFS
 
-   fmt.Fprintf(os.Stderr, "data %x\n", itemdata)
+   fmt.Fprintf(os.Stderr, "data %x\n\n", itemdata)
 
    var test SHITEM_NTFS 
    test.itemsize = size
 
    if class >= 0x30 {
       bytereader := bytes.NewReader(itemdata[stringpos8bit:])
-
       var strpos = bytereader.Len()
       var strlen int
-
       for bytereader.Len() > 0 {
-         val, _ := getint16(bytereader)
-         if val == 0 {
-            strlen = strpos - bytereader.Len()
+         val, _ := getint32(bytereader)
+         if val == beef {
+            strlen = (strpos - bytereader.Len()) - beefseek
             strpos = strlen + stringpos8bit
             break
          }
-         bytereader.Seek(-1, os.SEEK_CUR)
+         bytereader.Seek(-(beeflen-1), os.SEEK_CUR)
       }
-
       eightbitstring := string(itemdata[stringpos8bit:strpos])
       fmt.Println(eightbitstring)
    }

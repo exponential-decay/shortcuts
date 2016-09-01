@@ -13,6 +13,10 @@ var found_shortcut_PIDL = [17]byte{0x50, 0xe0, 0x4f, 0xd0, 0x20, 0xea, 0x3a, 0x6
 //https://files.sans.org/summit/Digital_Forensics_and_Incident_Response_Summit_2015/PDFs/PlumbingtheDepthsShellBagsEricZimmerman.pdf
 //http://www.williballenthin.com/forensics/shellbags/
 
+const beef = 0xbeef0004
+const beeflen = 0x04
+const beefseek = 0x08
+
 //structs that make up the shortcut specification [76 bytes] 
 type SHITEM_NTFS struct {
    itemsize    uint16
