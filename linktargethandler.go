@@ -45,7 +45,7 @@ func fpgetlenint16(fp *os.File) (uint16, error) {
    return newint, err
 }
 
-func populateSHITEM_NTFS(itemdata []byte, size uint16) {
+func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
 
    //SHITEM_NTFS
    //SHITEM_EXT_NTFS
@@ -55,17 +55,25 @@ func populateSHITEM_NTFS(itemdata []byte, size uint16) {
    var test SHITEM_NTFS 
    test.itemsize = size
 
-   x:=12
-   bytereader := bytes.NewReader(ids.idlistdata)
-   for x < bytereader.Len() {
-      byte
-      fmt.Fprintf(os.Stderr, "%x\n", itemdata[x])
-      newint, _ := getint16(bytereader[x:x+1]) 
-      if newint == 0 {
-         break
-      }
-   }
+   if class >= 0x30 {
+      bytereader := bytes.NewReader(itemdata[stringpos8bit:])
 
+      var strpos = bytereader.Len()
+      var strlen int
+
+      for bytereader.Len() > 0 {
+         val, _ := getint16(bytereader)
+         if val == 0 {
+            strlen = strpos - bytereader.Len()
+            strpos = strlen + stringpos8bit
+            break
+         }
+         bytereader.Seek(-1, os.SEEK_CUR)
+      }
+
+      eightbitstring := string(itemdata[stringpos8bit:strpos])
+      fmt.Println(eightbitstring)
+   }
 }
 
 func getidfields(ids idlist) error {
@@ -98,7 +106,7 @@ func getidfields(ids idlist) error {
          if err != nil {   //likely io.EOF if we're not careful
             return err
          }
-         populateSHITEM_NTFS(item.data, item.idsize)
+         populateSHITEM_NTFS(item.classid, item.data, item.idsize)
       }
    }
    return nil
