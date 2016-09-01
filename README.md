@@ -34,6 +34,11 @@ For C developers, this library looks invaluable.
 
 Placing these here until we have better understanding. 
 
+These structures seem to fall under two names:
+
+* MS Shell Data-Source
+* MS Shell Bag
+
 0x31 Type Structures:
 
 ITEM SIZE:        ## ##
