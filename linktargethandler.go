@@ -6,6 +6,7 @@ import (
    "bytes"
    "errors"
    "encoding/binary"
+   "reflect"
 )
 
 type idlist struct {
@@ -62,29 +63,48 @@ func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
    fmt.Fprintf(os.Stderr, "data %x\n\n", itemdata)
 
    var t1 SHITEM_NTFS 
-   //var t2 SHITEM_EXT_NTFS
-
-   t1.itemsize = size
+   var t2 SHITEM_EXT_NTFS
 
    if class >= 0x30 {
+
       bytereader := bytes.NewReader(itemdata[stringpos8bit:])
-      var strpos = bytereader.Len()
-      var strlen int
-      for bytereader.Len() > 0 {
-         val, _ := getint32(bytereader)
+      var strpos = bytereader.Len()                   //length at time we begin...
+      var eightbitstrlen int                          //length of the 8-bit string
+      for bytereader.Len() > 0 {       
+         val, _ := getint32(bytereader)               //we're looking for 0xbeef0004
          if val == beef {
-            strlen = (strpos - bytereader.Len()) - beefseek
-            strpos = strlen + stringpos8bit
+            eightbitstrlen = (strpos - bytereader.Len()) - beefseek
+            strpos = eightbitstrlen + stringpos8bit
             break
          }
-         bytereader.Seek(-(beeflen-1), os.SEEK_CUR)
+         bytereader.Seek(-(beeflen-1), os.SEEK_CUR)   //beeflen minus one     //replace os.SEEK_CUR with io.SEEK...
       }
-      eightbitstring := string(itemdata[stringpos8bit:strpos])
-      fmt.Println(eightbitstring)
 
-      pos := strpos + EXT_LEN -1
-      remaining := len(itemdata)-(strpos + EXT_LEN)+1
-      fmt.Fprintf(os.Stderr, "Getting UTF-16 from pos: %d, %d, %x\n", pos, remaining, string(itemdata[pos:pos+remaining]))
+      bit8string = string(itemdata[stringpos8bit:strpos])
+
+      pos := strpos + EXT_LEN
+      remaining := len(itemdata)-(strpos + EXT_LEN) - 2     //lenght of uint16
+
+      utf16string = string(itemdata[pos:pos+remaining])
+
+      fmt.Fprintf(os.Stderr, "%x\n", itemdata[pos:pos+remaining])
+      fmt.Println(bit8string, utf16string)
+      fmt.Fprintf(os.Stderr, "%d, %x\n", len(itemdata[:stringpos8bit]), itemdata[:stringpos8bit])
+      fmt.Println(reflect.TypeOf(t1).Size())
+
+      s1 := bytes.NewReader(itemdata[:stringpos8bit])
+      s2 := bytes.NewReader(itemdata[strpos:])
+
+      err := binary.Read(s1, binary.LittleEndian, &t1)
+      if err != nil {
+         fmt.Println(err)
+      }
+
+      err = binary.Read(s2, binary.LittleEndian, &t2)
+      if err != nil {
+         fmt.Println(err)
+      }
+
    }
 }
 

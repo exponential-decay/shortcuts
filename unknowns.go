@@ -19,30 +19,32 @@ const beefseek = 0x08
 
 //structs that make up the shortcut specification [76 bytes] 
 type SHITEM_NTFS struct {
-   itemsize    uint16
-   itemtype    uint16
-   size1       uint32
-   dostime     uint16    //nb. these two may need swapping
-   dosdate     uint16
-   size2       uint16
-   bitname8    []byte
+   ItemType    uint16
+   Size1       uint32
+   Dostime     uint32    //nb. these two may need swapping
+   Size2       uint16
+   //byte8string []byte    //8-bit string...
 }
 
 var stringpos8bit = 0x0C //12bytes
-var STRUCT_LEN = 0xE     //14 without 8-bit string
+
+var SHITEM_NTFS_LEN = 0xC     //14 without 8-bit string
 var EXT_LEN = 0x1C       //28bytes no []byte UTF16 block
 
+var bit8string string
+var utf16string string
+
 type SHITEM_EXT_NTFS struct {
-   extsize     uint16
-   version     uint16
-   signature   uint32   //0xbeef0004
-   date1       uint32   //creation
-   date2       uint32   //last accessed
-   identifier  uint16   //maybe uint32 given 00 padding
-   unknown     uint16   //could be a uint32 in combination with identifier
-   mftentry    uint32   //e.g. 8c 75 06 00 == 0x0006758c
-   mftseqno    uint32   //e.g. 00 00 0A 00 == 10 ? 
-   utfstring   []byte   //what's left...
+   Extsize     uint16
+   Version     uint16
+   Signature   uint32   //0xbeef0004
+   Date1       uint32   //creation
+   Date2       uint32   //last accessed
+   Identifier  uint16   //maybe uint32 given 00 padding
+   Unknown     uint16   //could be a uint32 in combination with identifier
+   Mftentry    uint32   //e.g. 8c 75 06 00 == 0x0006758c
+   Mftseqno    uint32   //e.g. 00 00 0A 00 == 10 ? 
+   //utfstring   []byte   //what's left...
 }
 
 //values for bitwise in LinkFlags
