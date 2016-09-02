@@ -5,8 +5,9 @@ import (
    "fmt"
    "bytes"
    "errors"
+   "strings"
+   "unicode/utf16"
    "encoding/binary"
-   "reflect"
 )
 
 type idlist struct {
@@ -24,6 +25,40 @@ type itemid struct {
 }
 
 const uint16len = 2
+
+func Extend(slice []uint16, element uint16) []uint16 {
+    n := len(slice)
+    if n == cap(slice) {
+        // Slice is full; must grow.
+        // We double its size and add 1, so if the size is zero we still grow.
+        newSlice := make([]uint16, len(slice), 2*len(slice)+1)
+        copy(newSlice, slice)
+        slice = newSlice
+    }
+    slice = slice[0 : n+1]
+    slice[n] = element
+    return slice
+}
+
+func decodeUtf16(utf16buf []byte) {
+   const SHORT_LEN = 2
+   var x = 0
+   var test []uint16   
+   for x < len(utf16buf) {
+      tmpbuf := utf16buf[x:2+x]
+      var abc uint16
+      strbuf := bytes.NewReader(tmpbuf)
+      err := binary.Read(strbuf, binary.LittleEndian, &abc)
+      if err != nil {
+         fmt.Println(err)
+      }
+      if abc != 0x00 {
+         test = Extend(test, abc)
+      }
+      x+=2
+   }
+   fmt.Fprintf(os.Stderr, "%s\n", strings.TrimSpace(string(utf16.Decode(test))))
+}
 
 func getint32(bytereader *bytes.Reader) (uint32, error) {
    var newint uint32
@@ -60,7 +95,7 @@ func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
    //SHITEM_NTFS
    //SHITEM_EXT_NTFS
 
-   fmt.Fprintf(os.Stderr, "data %x\n\n", itemdata)
+   //fmt.Fprintf(os.Stderr, "data %x\n\n", itemdata)
 
    var t1 SHITEM_NTFS 
    var t2 SHITEM_EXT_NTFS
@@ -80,29 +115,31 @@ func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
          bytereader.Seek(-(beeflen-1), os.SEEK_CUR)   //beeflen minus one     //replace os.SEEK_CUR with io.SEEK...
       }
 
-      bit8string = string(itemdata[stringpos8bit:strpos])
+      bit8buf := itemdata[stringpos8bit:strpos]
+      bit8string = string(bit8buf)
 
       pos := strpos + EXT_LEN
       remaining := len(itemdata)-(strpos + EXT_LEN) - 2     //lenght of uint16
 
-      utf16string = string(itemdata[pos:pos+remaining])
+      utf16buf := itemdata[pos:pos+remaining]
+      utf16string = string(utf16buf)
 
-      fmt.Fprintf(os.Stderr, "%x\n", itemdata[pos:pos+remaining])
       fmt.Println(bit8string, utf16string)
-      fmt.Fprintf(os.Stderr, "%d, %x\n", len(itemdata[:stringpos8bit]), itemdata[:stringpos8bit])
-      fmt.Println(reflect.TypeOf(t1).Size())
+      if len(utf16buf) % 2 == 0 {
+         decodeUtf16(utf16buf)         
+      }
 
       s1 := bytes.NewReader(itemdata[:stringpos8bit])
       s2 := bytes.NewReader(itemdata[strpos:])
 
       err := binary.Read(s1, binary.LittleEndian, &t1)
       if err != nil {
-         fmt.Println(err)
+         fmt.Println(err)     //handle error
       }
 
       err = binary.Read(s2, binary.LittleEndian, &t2)
       if err != nil {
-         fmt.Println(err)
+         fmt.Println(err)     //handle error
       }
 
    }
