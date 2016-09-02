@@ -75,3 +75,37 @@ UNKNOWN:          00 00
 MFTENTRY:         63 77 02 00 
 MFTSEQ:           00 00 03 00 
 UTF16 STRING:     00 00 00 00 00 00 00 00 00 00 00 00 00 00 67 00 69 00 74 00 68 00 75 00 62 00 2e 00 63 00 6f 00 6d 00 00 00 1a 00
+
+ITEM SIZE:        ## ##
+ITEM TYPE:        31 00 
+SIZE:             00 00 00 00 
+DATETIME:         19 49 d6 0e 
+SIZE:             10 00 
+8-BIT NAME:       53 48 4f 52 54 43 7e 31 00 00
+EXTSIZE:          40 00 
+VERSION:          08 00 
+SIGNATURE:        04 00 ef be 
+DATE1:            17 49 ca 31 
+DATE2:            19 49 d6 0e 
+IDENTIFIER:       2a 00 
+UNKNOWN:          00 00 
+MFTENTRY:         ae 7c 01 00 
+MFTSEQ:           00 00 84 05 
+UTF16 STRING:     00 00 00 00 00 00 00 00 00 00 00 00 00 00 73 00 68 00 6f 00 72 00 74 00 63 00 75 00 74 00 7a 00 00 00 18 00
+
+ITEM SIZE:        ## ##
+ITEM TYPE:        31 00 
+SIZE:             00 00 00 00 
+DATETIME:         19 49 d6 0e 
+SIZE:             10 00 
+8-BIT NAME:       53 48 4f 52 54 43 7e 31 00 00
+EXTSIZE:          40 00 
+VERSION:          08 00 
+SIGNATURE:        04 00 ef be 
+DATE1:            17 49 ca 31 
+DATE2:            19 49 d6 0e
+IDENTIFIER:       2a 00 
+UNKNOWN:          00 00 
+MFTENTRY:         ae 7c 01 00 
+MFTSEQ:           00 00 84 05
+UTF16 STRING:     00 00 00 00 00 00 00 00 00 00 00 00 00 00 73 00 68 00 6f 00 72 00 74 00 63 00 75 00 74 00 7a 00 00 00 18 00
