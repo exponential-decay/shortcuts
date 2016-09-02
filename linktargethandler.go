@@ -5,8 +5,6 @@ import (
    "fmt"
    "bytes"
    "errors"
-   "strings"
-   "unicode/utf16"
    "encoding/binary"
 )
 
@@ -25,61 +23,6 @@ type itemid struct {
 }
 
 const uint16len = 2
-
-func Extend(slice []uint16, element uint16) []uint16 {
-    n := len(slice)
-    if n == cap(slice) {
-        // Slice is full; must grow.
-        // We double its size and add 1, so if the size is zero we still grow.
-        newSlice := make([]uint16, len(slice), 2*len(slice)+1)
-        copy(newSlice, slice)
-        slice = newSlice
-    }
-    slice = slice[0 : n+1]
-    slice[n] = element
-    return slice
-}
-
-func decodeUtf16(utf16buf []byte) (string, error) {
-   const SHORT_LEN = 2
-   var x = 0
-   var string_arr []uint16   
-   for x < len(utf16buf) {
-      tmpbuf := utf16buf[x:2+x]
-      var char uint16
-      strbuf := bytes.NewReader(tmpbuf)
-      err := binary.Read(strbuf, binary.LittleEndian, &char)
-      if err != nil {
-         return "", err
-      }
-      if char != 0x00 {
-         string_arr = Extend(string_arr, char)
-      }
-      x+=2
-   }
-   utf16decoded := strings.TrimSpace(string(utf16.Decode(string_arr)))
-   return utf16decoded, nil
-}
-
-func getint32(bytereader *bytes.Reader) (uint32, error) {
-   var newint uint32
-   err := binary.Read(bytereader, binary.LittleEndian, &newint)
-   if err != nil {
-      return 0, err
-   }
-   return newint, err
-}
-
-func getint16(bytereader *bytes.Reader) (uint16, error) {
-   var newint uint16
-
-   //func Read(r io.Reader, order ByteOrder, data interface{}) error
-   err := binary.Read(bytereader, binary.LittleEndian, &newint)
-   if err != nil {
-      return 0, err
-   }
-   return newint, err
-}
 
 //get uint16 from beginning of an appropriate file stream
 func fpgetlenint16(fp *os.File) (uint16, error) {
@@ -102,7 +45,7 @@ func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
    var t2 SHITEM_EXT_NTFS
 
    if class == 0x1f {
-      fmt.Fprintf(os.Stderr, "Computer: %s\n", string(itemdata[1:]))
+      fmt.Fprintf(os.Stderr, "Computer: %x\n", string(itemdata[1:]))
    }
 
    if class == 0x2f {
@@ -124,7 +67,7 @@ func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
          bytereader.Seek(-(beeflen-1), os.SEEK_CUR)   //beeflen minus one     //replace os.SEEK_CUR with io.SEEK...
       }
 
-      bit8buf := itemdata[stringpos8bit:strpos-2]
+      bit8buf := bytes.Trim(itemdata[stringpos8bit:strpos-1], "\x00")
       bit8string = string(bit8buf)
 
       pos := strpos + EXT_LEN
@@ -142,7 +85,6 @@ func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
          fmt.Fprintf(os.Stdout, "8-bit: %s, UTF-16: %s\n", bit8string, utf16stringdecoded)
       }
 
-
       s1 := bytes.NewReader(itemdata[:stringpos8bit])
       s2 := bytes.NewReader(itemdata[strpos:])
 
@@ -156,6 +98,9 @@ func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
          fmt.Println(err)     //handle error
       }
 
+      fmt.Println("DOS:", msDosTimeToTime(t1.DosModifiedDate, t1.DosModifiedTime))
+      fmt.Println("NTFS:", msDosTimeToTime(t2.CreatedDate, t2.CreatedDate), msDosTimeToTime(t2.ModifiedDate, t2.ModifiedDate))      
+      fmt.Println("---")
    }
 }
 

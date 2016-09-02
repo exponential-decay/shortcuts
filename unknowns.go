@@ -19,10 +19,11 @@ const beefseek = 0x08
 
 //structs that make up the shortcut specification [76 bytes] 
 type SHITEM_NTFS struct {
-   ItemType    uint16
-   Size1       uint32
-   Dostime     uint32    //nb. these two may need swapping
-   Size2       uint16
+   ItemType             uint16
+   Size1                uint32
+   DosModifiedDate      uint16    //nb. these two may need swapping
+   DosModifiedTime      uint16
+   Size2                uint16
    //byte8string []byte    //8-bit string...
 }
 
@@ -35,15 +36,17 @@ var bit8string string
 var utf16string string
 
 type SHITEM_EXT_NTFS struct {
-   Extsize     uint16
-   Version     uint16
-   Signature   uint32   //0xbeef0004
-   Date1       uint32   //creation
-   Date2       uint32   //last accessed
-   Identifier  uint16   //maybe uint32 given 00 padding
-   Unknown     uint16   //could be a uint32 in combination with identifier
-   Mftentry    uint32   //e.g. 8c 75 06 00 == 0x0006758c
-   Mftseqno    uint32   //e.g. 00 00 0A 00 == 10 ? 
+   Extsize        uint16
+   Version        uint16
+   Signature      uint32   //0xbeef0004
+   CreatedDate    uint16   //creation
+   CreatedTime    uint16
+   ModifiedDate   uint16   //last accessed
+   ModifiedTime   uint16
+   Identifier     uint16   //maybe uint32 given 00 padding
+   Unknown        uint16   //could be a uint32 in combination with identifier
+   Mftentry       uint32   //e.g. 8c 75 06 00 == 0x0006758c
+   Mftseqno       uint32   //e.g. 00 00 0A 00 == 10 ? 
    //utfstring   []byte   //what's left...
 }
 
