@@ -101,6 +101,14 @@ func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
    var t1 SHITEM_NTFS 
    var t2 SHITEM_EXT_NTFS
 
+   if class == 0x1f {
+      fmt.Fprintf(os.Stderr, "Computer: %s\n", string(itemdata[1:]))
+   }
+
+   if class == 0x2f {
+      fmt.Fprintf(os.Stderr, "Drive: %s\n", string(itemdata[1:]))
+   }
+
    if class >= 0x30 {
 
       bytereader := bytes.NewReader(itemdata[stringpos8bit:])
