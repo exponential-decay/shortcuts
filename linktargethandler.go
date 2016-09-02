@@ -40,24 +40,25 @@ func Extend(slice []uint16, element uint16) []uint16 {
     return slice
 }
 
-func decodeUtf16(utf16buf []byte) {
+func decodeUtf16(utf16buf []byte) (string, error) {
    const SHORT_LEN = 2
    var x = 0
-   var test []uint16   
+   var string_arr []uint16   
    for x < len(utf16buf) {
       tmpbuf := utf16buf[x:2+x]
-      var abc uint16
+      var char uint16
       strbuf := bytes.NewReader(tmpbuf)
-      err := binary.Read(strbuf, binary.LittleEndian, &abc)
+      err := binary.Read(strbuf, binary.LittleEndian, &char)
       if err != nil {
-         fmt.Println(err)
+         return "", err
       }
-      if abc != 0x00 {
-         test = Extend(test, abc)
+      if char != 0x00 {
+         string_arr = Extend(string_arr, char)
       }
       x+=2
    }
-   fmt.Fprintf(os.Stderr, "%s\n", strings.TrimSpace(string(utf16.Decode(test))))
+   utf16decoded := strings.TrimSpace(string(utf16.Decode(string_arr)))
+   return utf16decoded, nil
 }
 
 func getint32(bytereader *bytes.Reader) (uint32, error) {
@@ -115,7 +116,7 @@ func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
          bytereader.Seek(-(beeflen-1), os.SEEK_CUR)   //beeflen minus one     //replace os.SEEK_CUR with io.SEEK...
       }
 
-      bit8buf := itemdata[stringpos8bit:strpos]
+      bit8buf := itemdata[stringpos8bit:strpos-2]
       bit8string = string(bit8buf)
 
       pos := strpos + EXT_LEN
@@ -123,11 +124,16 @@ func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
 
       utf16buf := itemdata[pos:pos+remaining]
       utf16string = string(utf16buf)
-
-      fmt.Println(bit8string, utf16string)
+      
       if len(utf16buf) % 2 == 0 {
-         decodeUtf16(utf16buf)         
+         utf16stringdecoded, err := decodeUtf16(utf16buf)
+         if err != nil {
+            fmt.Println("Error decoding UTF-8 string in link target.")
+            fmt.Println("8-bit name: ", bit8string)
+         }
+         fmt.Fprintf(os.Stdout, "8-bit: %s, UTF-16: %s\n", bit8string, utf16stringdecoded)
       }
+
 
       s1 := bytes.NewReader(itemdata[:stringpos8bit])
       s2 := bytes.NewReader(itemdata[strpos:])
