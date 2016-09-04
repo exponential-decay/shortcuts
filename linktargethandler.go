@@ -8,12 +8,28 @@ import (
    "encoding/binary"
 )
 
+func formatGlobalID(gid []byte) string {
+   //e.g. 208d2c60-3aea-1069-a2d7-08002b30309d
+   //e.g. e04fd020ea3a6910a2d808002b30309d becomes e04fd020-ea3a-6910-a2d8-08002b30309d
+   if len(gid) >= 18 {
+      clid := fmt.Sprintf("%x-%x-%x-%x-%x\n", gid[2:2+4], gid[6:6+2], gid[8:8+2], gid[10:10+2], gid[12:])
+      if clid != "" {
+         if WindowsClassIDs[clid] != "" {
+            return WindowsClassIDs[clid]
+         } else {
+            return clid
+         }
+      }
+   }
+   return ""
+}
+
 func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
    var t1 SHITEM_NTFS 
    var t2 SHITEM_EXT_NTFS
 
    if class == 0x1f {
-      fmt.Fprintf(os.Stderr, "Computer: %x\n", string(itemdata[1:]))
+      fmt.Fprintf(os.Stderr, "Windows Class Identifier: %s\n", formatGlobalID(itemdata[:]))
    }
 
    if class == 0x2f {
