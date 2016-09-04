@@ -1,12 +1,15 @@
 package main
 
 import (
+   "os"
    "time"
    "bytes"
    "strings"
    "unicode/utf16"
    "encoding/binary"   
 )
+
+const uint16len = 2
 
 func ExtendSlice(slice []uint16, element uint16) []uint16 {
     n := len(slice)
@@ -60,6 +63,16 @@ func getint16(bytereader *bytes.Reader) (uint16, error) {
    if err != nil {
       return 0, err
    }
+   return newint, err
+}
+
+//get uint16 from beginning of an appropriate file stream
+func fpgetlenint16(fp *os.File) (uint16, error) {
+   var start int
+   buf := make([]byte, uint16len)
+   _, err := fp.Read(buf[start:])
+   check(err)
+   newint, err := getint16(bytes.NewReader(buf))
    return newint, err
 }
 

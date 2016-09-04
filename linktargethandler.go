@@ -8,39 +8,7 @@ import (
    "encoding/binary"
 )
 
-type idlist struct {
-   idlistlen   uint16
-   idlistdata  []byte
-   termid      uint16
-}
-
-type itemid struct {
-   idsize uint16
-
-   //shellitem data can be split like this...
-   classid uint8
-   data []byte
-}
-
-const uint16len = 2
-
-//get uint16 from beginning of an appropriate file stream
-func fpgetlenint16(fp *os.File) (uint16, error) {
-   var start int
-   buf := make([]byte, uint16len)
-   _, err := fp.Read(buf[start:])
-   check(err)
-   newint, err := getint16(bytes.NewReader(buf))
-   return newint, err
-}
-
 func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
-
-   //SHITEM_NTFS
-   //SHITEM_EXT_NTFS
-
-   //fmt.Fprintf(os.Stderr, "data %x\n\n", itemdata)
-
    var t1 SHITEM_NTFS 
    var t2 SHITEM_EXT_NTFS
 
@@ -100,6 +68,12 @@ func populateSHITEM_NTFS(class uint8, itemdata []byte, size uint16) {
 
       fmt.Println("DOS:", msDosTimeToTime(t1.DosModifiedDate, t1.DosModifiedTime))
       fmt.Println("NTFS:", msDosTimeToTime(t2.CreatedDate, t2.CreatedDate), msDosTimeToTime(t2.ModifiedDate, t2.ModifiedDate))      
+      if ExtensionVersion[t2.Version] != IdentifierFlagsMap[t2.Identifier] {
+         fmt.Fprintf(os.Stderr, "Extension Version: %s\n", ExtensionVersion[t2.Version])
+         fmt.Fprintf(os.Stderr, "Identifier Value: %s\n", IdentifierFlagsMap[t2.Identifier])
+      } else {
+         fmt.Fprintf(os.Stderr, "Identifier Value: %s\n", IdentifierFlagsMap[t2.Identifier])
+      }
       fmt.Println("---")
    }
 }
@@ -125,7 +99,7 @@ func getidfields(ids idlist) error {
          }       
 
          //as there is no Peek() for a "bytes/reader" we can reset
-         //like this... allowing the full struct to be output for debug
+         //like this... also allows the full struct to be output for debug
          bytereader.Seek(curr_pos, 0)
 
          readlen := (item.idsize-uint16len)     //minus one byte

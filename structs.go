@@ -178,3 +178,17 @@ var HotKeyMapHigh = map[byte]string{
    0x02: "CTRL",
    0x04: "ALT",
 }
+
+//If HasLinkTargetIDList then we have an ID List to work from
+type idlist struct {
+   idlistlen   uint16
+   idlistdata  []byte      //list of itemid structs
+   termid      uint16      //terminal identifier, identifies end of id list 0x0000
+}
+
+//ItemID is part of the ID list structure...
+type itemid struct {
+   idsize uint16
+   classid uint8        //shellitem data can be split like this... classid/data
+   data []byte
+}

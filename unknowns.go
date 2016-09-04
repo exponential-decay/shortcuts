@@ -37,21 +37,28 @@ var utf16string string
 
 type SHITEM_EXT_NTFS struct {
    Extsize        uint16
-   Version        uint16
+   Version        uint16   //Extension Version Map (Extension version)
    Signature      uint32   //0xbeef0004
    CreatedDate    uint16   //creation
    CreatedTime    uint16
-   ModifiedDate   uint16   //last accessed
-   ModifiedTime   uint16
-   Identifier     uint16   //maybe uint32 given 00 padding
+   ModifiedDate   uint16   //last accessed/modified?
+   ModifiedTime   uint16   //
+   Identifier     uint16   //maybe uint32 given 00 padding//IdentifierFlagsMap
    Unknown        uint16   //could be a uint32 in combination with identifier
    Mftentry       uint32   //e.g. 8c 75 06 00 == 0x0006758c
    Mftseqno       uint32   //e.g. 00 00 0A 00 == 10 ? 
    //utfstring   []byte   //what's left...
 }
 
-//values for bitwise in LinkFlags
 //from: https://github.com/libyal/libfwsi/blob/master/documentation/Windows%20Shell%20Item%20format.asciidoc
+var ExtensionVersion = map[uint16]string{
+   0x0:        nomapvalue,
+   0x3:        "Windows XP or 2003",
+   0x7:        "Windows Vista (SP0)",
+   0x8:        "Windows 2008, 7, 8.0",       //looks accurate to samples I have  
+   0x9:        "Windows 8.1, 10",
+}
+
 var IdentifierFlagsMap = map[uint16]string{
    0x0:        nomapvalue,
    0x14:       "Windows XP or 2003",
@@ -60,10 +67,3 @@ var IdentifierFlagsMap = map[uint16]string{
    0x2e:       "Windows 8.1, 10",
 }
 
-var ExtensionVersion = map[uint16]string{
-   0x0:        nomapvalue,
-   0x3:        "Windows XP or 2003",
-   0x7:        "Windows Vista (SP0)",
-   0x8:        "Windows 2008, 7, 8.0",       //looks accurate to samples I have  
-   0x9:        "Windows 8.1, 10",
-}
