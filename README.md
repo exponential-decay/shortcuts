@@ -16,6 +16,7 @@ Here are some links you may find useful.
 - Just Solve It Wiki: http://fileformats.archiveteam.org/wiki/Windows_Shortcut 
 - Windows LNK Parsing Utility: https://tzworks.net/prototype_page.php?proto_id=11 
 - GitHub scan: https://github.com/search?utf8=%E2%9C%93&q=windows+shortcut
+- Shellbags (synonym): http://www.williballenthin.com/forensics/shellbags/ 
 
 #Microsoft Shell Format
 
