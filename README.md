@@ -1,9 +1,9 @@
-#shortcuts
+# shortcuts
 
 A tool for extracting information from Windows Shortcut Files. 
 Implemented in Golang.
 
-##Standing On The Shoulder Of Giants
+## Standing On The Shoulder Of Giants
 
 There's a whole host of information out there about this. I simply
 wanted a library I could work with in some of my more recent code. 
@@ -18,20 +18,20 @@ Here are some links you may find useful.
 - GitHub scan: https://github.com/search?utf8=%E2%9C%93&q=windows+shortcut
 - Shellbags (synonym): http://www.williballenthin.com/forensics/shellbags/ 
 
-#Microsoft Shell Format
+# Microsoft Shell Format
 
 It is undocumented, but a good project i discovered reverse engineering it is: 
 https://msdn.microsoft.com/en-us/library/windows/desktop/bb762540(v=vs.85).aspx
 
 For C developers, this library looks invaluable.
 
-##License
+## License
 
 [GPLv3](https://github.com/exponential-decay/shortcutz/blob/master/LICENSE)
 
 ---
 
-###NOTES ON STRUCTURES
+### NOTES ON STRUCTURES
 
 Placing these here until we have better understanding. 
 
